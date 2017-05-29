@@ -21,7 +21,7 @@ class Binary constructor(oc: Operation, seo: Expression, sei: Expression) : Expr
                 Operation.DIV ->
                     DoubleValue(eo.value / ei.value)
                 Operation.MOD ->
-                    DoubleValue(((eo.value as Int) % (ei.value as Int)) as Double)
+                    DoubleValue((eo.value.toInt() % ei.value.toInt()).toDouble())
                 Operation.POW ->
                     DoubleValue(Math.pow(eo.value,ei.value))
                 Operation.EQ ->

@@ -11,9 +11,19 @@ class Parser constructor(filename: String) {
             Token.IDENTIFIER, Token.SUB, Token.NOT, Token.LEFTPAR)
 
     //
-    fun parse()
+    private val program = Program(filename)
+
+    //
+    fun parse() : Program?
     {
-        parseProgram()
+        try {
+            parseProgram()
+        }
+        catch(se: SyntaxError) {
+            println(se)
+            return null
+        }
+        return program
     }
 
     //
@@ -24,10 +34,12 @@ class Parser constructor(filename: String) {
 
         while( true ) {
             if( lookahead.kind == Token.DECLARE ) {
-                parseDeclare()
+                val subr = parseDeclare()
+                program.subroutines.put(subr.name, subr)
             }
             else if( lookahead.kind == Token.SUBROUTINE ) {
-                parseSubroutine()
+                val subr = parseSubroutine()
+                program.subroutines.put(subr.name, subr)
             }
             else {
                 break
@@ -37,21 +49,25 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseDeclare() {
+    private fun parseDeclare() : Subroutine
+    {
         match(Token.DECLARE)
-        parseSubrHeader()
+        return parseSubrHeader()
     }
 
     //
-    private fun parseSubroutine() {
-        parseSubrHeader()
-        parseSequence()
+    private fun parseSubroutine() : Subroutine
+    {
+        val subr = parseSubrHeader()
+        subr.body = parseSequence()
         match(Token.END)
         match(Token.SUBROUTINE)
+        return subr
     }
 
     //
-    private fun parseNewLines() {
+    private fun parseNewLines()
+    {
         match(Token.NEWLINE)
         while( lookahead.kind == Token.NEWLINE ) {
             match(Token.NEWLINE)
@@ -59,28 +75,38 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseSubrHeader() {
+    private fun parseSubrHeader() : Subroutine
+    {
         match(Token.SUBROUTINE)
+        val name = lookahead.value
         match(Token.IDENTIFIER)
+        val params = mutableListOf<String>()
         if( lookahead.kind == Token.LEFTPAR ) {
             match(Token.LEFTPAR)
             if( lookahead.kind == Token.IDENTIFIER ) {
+                val p0 = lookahead.value
                 match(Token.IDENTIFIER)
+                params.add(p0)
                 while( lookahead.kind == Token.COMMA ) {
                     match(Token.COMMA)
+                    val p1 = lookahead.value
                     match(Token.IDENTIFIER)
+                    params.add(p1)
                 }
             }
             match(Token.RIGHTPAR)
         }
+        return Subroutine(name, params, null)
     }
 
     //
-    private fun parseSequence() {
+    private fun parseSequence() : Statement
+    {
         parseNewLines()
+        val stats = Sequence()
         loop@
         while( true ) {
-            when( lookahead.kind ) {
+            val esa = when( lookahead.kind ) {
                 Token.LET -> parseLet()
                 Token.INPUT -> parseInput()
                 Token.PRINT -> parsePrint()
@@ -91,95 +117,119 @@ class Parser constructor(filename: String) {
                 else -> break@loop
             }
             parseNewLines()
+            stats.items.add(esa)
         }
+        return stats
     }
 
     //
-    private fun parseLet() {
+    private fun parseLet() : Statement
+    {
         match(Token.LET)
+        val nm = lookahead.value
         match(Token.IDENTIFIER)
         match(Token.EQ)
-        parseExpression()
+        val ve = parseExpression()
+        return Let(nm, ve)
     }
 
     //
-    private fun parseInput()
+    private fun parseInput() : Statement
     {
         match(Token.INPUT)
+        val nm = lookahead.value
         match(Token.IDENTIFIER)
+        return Input(nm)
     }
 
     //
-    private fun parsePrint()
+    private fun parsePrint() : Statement
     {
         match(Token.PRINT)
-        parseExpression()
+        val exo = parseExpression()
+        return Print(exo)
     }
 
     //
-    private fun parseIf()
+    private fun parseIf() : Statement
     {
         match(Token.IF)
-        parseExpression()
+        val cono = parseExpression()
         match(Token.THEN)
-        parseSequence()
+        val deco = parseSequence()
         while( lookahead.kind == Token.ELSEIF ) {
             match(Token.ELSEIF)
-            parseExpression()
+            val coni = parseExpression()
             match(Token.THEN)
-            parseSequence()
+            val deci = parseSequence()
         }
         if( lookahead.kind == Token.ELSE ) {
             match(Token.ELSE)
-            parseSequence()
+            val alte = parseSequence()
         }
         match(Token.END)
         match(Token.IF)
+        return If(cono, deco, null)
     }
 
     //
-    private fun parseWhile()
+    private fun parseWhile() : Statement
     {
         match(Token.WHILE)
-        parseExpression()
-        parseSequence()
+        val cond = parseExpression()
+        val bdy = parseSequence()
         match(Token.END)
         match(Token.WHILE)
+        return While(cond, bdy)
     }
 
     //
-    private fun parseFor()
+    private fun parseFor() : Statement
     {
         match(Token.FOR)
+        val pr = lookahead.value
         match(Token.IDENTIFIER)
         match(Token.EQ)
-        parseExpression()
+        val be = parseExpression()
         match(Token.TO)
-        parseExpression()
+        val en = parseExpression()
+        var sp = DoubleValue(1.0)
         if( lookahead.kind == Token.STEP ) {
             match(Token.STEP)
+            var posi = true
             if( lookahead.kind == Token.SUB ) {
+                posi = false
                 match(Token.SUB)
             }
+            var spvl = lookahead.value.toDouble()
             match(Token.DOUBLE)
+            spvl *= if( posi ) 1 else -1
+            sp = DoubleValue(spvl)
         }
-        parseSequence()
+        val bo = parseSequence()
         match(Token.END)
         match(Token.FOR)
+        return For(pr, be, en, sp, bo)
     }
 
     //
-    private fun parseCall()
+    private fun parseCall() : Statement
     {
         match(Token.CALL)
+        val name = lookahead.value
         match(Token.IDENTIFIER)
+        val args = mutableListOf<Expression>()
         if( FirstOfExpr.contains(lookahead.kind) ) {
-            parseExpression()
+            var e0 = parseExpression()
+            args.add(e0)
             while( lookahead.kind == Token.COMMA ) {
                 match(Token.COMMA)
-                parseExpression()
+                e0 = parseExpression()
+                args.add(e0)
             }
         }
+        // TODO check existence of procedure
+        return Call(name, args)
     }
 
     //
@@ -321,6 +371,7 @@ class Parser constructor(filename: String) {
                     }
                 }
                 match(Token.RIGHTPAR)
+                // TODO check existence of subroutine
                 return Apply(name, args)
             }
             else {
