@@ -13,4 +13,7 @@ class Variable constructor(nm: String) : Expression {
 
         throw RuntimeError("Uninitialized variable '$name'.")
     }
+
+    //
+    override fun toString() : String = name
 }

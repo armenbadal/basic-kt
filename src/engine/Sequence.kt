@@ -11,4 +11,8 @@ class Sequence : Statement {
             el.execute(env)
         }
     }
+
+    //
+    override fun toString() : String =
+        items.joinToString("\n")
 }

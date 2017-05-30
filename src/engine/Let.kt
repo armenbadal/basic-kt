@@ -11,4 +11,7 @@ class Let constructor(vr: String, ex: Expression) : Statement {
         val v0 = exprval.evaluate(env)
         env.put(varname, v0)
     }
+
+    override fun toString(): String =
+        "LET $varname = ${exprval.toString()}"
 }

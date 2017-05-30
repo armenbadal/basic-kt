@@ -53,7 +53,11 @@ class Binary constructor(oc: Operation, seo: Expression, sei: Expression) : Expr
             }
         }
         else {
-            throw RuntimeError("Uncompatibel operators for '$opcode'.")
+            throw RuntimeError("Uncompatible operators for '$opcode'.")
         }
     }
+
+    //
+    override fun toString() : String =
+        "($subexpro $opcode $subexpri)"
 }

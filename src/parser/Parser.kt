@@ -157,19 +157,25 @@ class Parser constructor(filename: String) {
         val cono = parseExpression()
         match(Token.THEN)
         val deco = parseSequence()
+        var resu = If(cono, deco, null)
+        var bi = resu
         while( lookahead.kind == Token.ELSEIF ) {
             match(Token.ELSEIF)
             val coni = parseExpression()
             match(Token.THEN)
             val deci = parseSequence()
+            var bre = If(coni, deci, null)
+            bi.alternative = bre
+            bi = bre
         }
         if( lookahead.kind == Token.ELSE ) {
             match(Token.ELSE)
             val alte = parseSequence()
+            bi.alternative = alte
         }
         match(Token.END)
         match(Token.IF)
-        return If(cono, deco, null)
+        return resu
     }
 
     //
@@ -322,6 +328,7 @@ class Parser constructor(filename: String) {
                 Token.MOD -> Operation.MOD
                 else -> Operation.NONE
             }
+            match(lookahead.kind)
             val e1 = parsePower()
             e0 = Binary(opc, e0, e1)
         }
@@ -371,7 +378,9 @@ class Parser constructor(filename: String) {
                     }
                 }
                 match(Token.RIGHTPAR)
-                // TODO check existence of subroutine
+                if( !program.subroutines.containsKey(name) ) {
+                    throw SyntaxError("Subroutine '$name' dot declared/defined.")
+                }
                 return Apply(name, args)
             }
             else {

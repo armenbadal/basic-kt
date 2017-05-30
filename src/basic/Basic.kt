@@ -3,8 +3,10 @@ package basic
 
 fun main(args: Array<String>)
 {
-    val v0 = engine.DoubleValue(3.14)
-    val v1 = engine.StringValue("Hello!")
-
-    println(args)
+    /// println(args)
+    val parser = parser.Parser("C:\\Projects\\a0\\test00.bas")
+    val prog = parser.parse()
+    if( prog != null ) {
+        println(prog.toString())
+    }
 }

@@ -9,4 +9,8 @@ class Input constructor(nm: String) : Statement {
     {
         // TODO read double or string from standard input
     }
+
+    //
+    override fun toString() : String =
+        "INPUT $varname"
 }

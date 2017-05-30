@@ -8,4 +8,8 @@ class Call constructor(nm: String, ags: MutableList<Expression>) : Statement {
     {
         // TODO
     }
+
+    //
+    override fun toString() : String =
+        "CALL ${clapp.toString()}"
 }

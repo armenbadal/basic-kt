@@ -12,4 +12,14 @@ class For constructor(pr: String, be: Expression, en: Expression, sp: Expression
     {
         // TODO
     }
+
+    //
+    override fun toString() : String
+    {
+        var res = "FOR $parameter = ${begin.toString()} "
+        res += "TO ${end.toString()} "
+        res += "STEP ${step.toString()}\n"
+        res += body.toString() + "\nEND FOR"
+        return res
+    }
 }

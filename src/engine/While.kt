@@ -21,4 +21,8 @@ class While constructor(cn: Expression, bo: Statement) : Statement {
         }
         */
     }
+
+    //
+    override fun toString() : String =
+        "WHILE $condition\n$body\nEND WHILE"
 }
