@@ -7,7 +7,7 @@ data class Subroutine constructor(val name: String, val parameters: MutableList<
     {
         var res = "SUB $name"
         if( !parameters.isEmpty() ) {
-            res += "(${parameters.joinToString(", ")}"
+            res += "(${parameters.joinToString(", ")})"
         }
         res += "\n" + body.toString() + "\n"
         res += "END SUB"

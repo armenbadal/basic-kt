@@ -96,7 +96,14 @@ class Parser constructor(filename: String) {
             }
             match(Token.RIGHTPAR)
         }
-        return Subroutine(name, params, null)
+
+        var subr = program.subroutines[name] ?: Subroutine(name, params, null)
+        if( subr.parameters.count() != params.count() ) {
+            throw SyntaxError("'$name' ենթածրագիրն արդեն հայտարարված/սահմանված է այլ պարամետրերով։")
+        }
+        // TODO ստուգել նաև պարամետրերի տիպերի համապատասխանությունը
+        program.subroutines[name] = subr
+        return subr
     }
 
     //
