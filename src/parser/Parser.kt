@@ -195,6 +195,9 @@ class Parser constructor(filename: String) {
         match(Token.FOR)
         val pr = lookahead.value
         match(Token.IDENTIFIER)
+        if( pr.endsWith('$') ) {
+            throw SyntaxError("FOR հրամանի պարամետրը պետք է թվային լինի։")
+        }
         match(Token.EQ)
         val be = parseExpression()
         match(Token.TO)
@@ -234,8 +237,11 @@ class Parser constructor(filename: String) {
                 args.add(e0)
             }
         }
-        // TODO check existence of procedure
-        return Call(name, args)
+        if( !program.subroutines.containsKey(name) ) {
+            throw SyntaxError("Subroutine '$name' dot declared/defined.")
+        }
+        val cal = program.subroutines.get(name)
+        return Call(cal!!, args)
     }
 
     //
@@ -381,7 +387,8 @@ class Parser constructor(filename: String) {
                 if( !program.subroutines.containsKey(name) ) {
                     throw SyntaxError("Subroutine '$name' dot declared/defined.")
                 }
-                return Apply(name, args)
+                val cal = program.subroutines.get(name)
+                return Apply(cal!!, args)
             }
             else {
                 return Variable(name)

@@ -1,12 +1,12 @@
 package engine
 
-class Call constructor(nm: String, ags: MutableList<Expression>) : Statement {
-    val clapp = Apply(nm, ags)
+class Call constructor(cl: Subroutine, ags: MutableList<Expression>) : Statement {
+    val clapp = Apply(cl, ags)
 
     //
     override fun execute(env: Environment)
     {
-        // TODO
+        clapp.evaluate(env)
     }
 
     //

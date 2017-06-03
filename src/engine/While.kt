@@ -5,21 +5,18 @@ class While constructor(cn: Expression, bo: Statement) : Statement {
     val condition = cn
     val body = bo
 
-    //
+    // WHILE հրամանի ինտերպրետացիան
     override fun execute(env: Environment)
     {
-        /*
-        var cv = condition.evaluate(env)
-        if( cv is DoubleValue ) {
-            while( cv.value != 0.0 ) {
-                body.execute(env)
-                cv = condition.evaluate(env)
-            }
+        // հաշվել ցիկլի պայմանը և համոզվել, որ արդյուքնը թվային է
+        var cv = condition.evaluate(env) as? DoubleValue ?: throw RuntimeError("WHILE ցիկլի պայմանը պետք է թվային լինի։")
+        // քանի դեռ պայմանի արժեքը տարբեր է զրոյից...
+        while( cv.value != 0.0 ) {
+            // կատարել ցիկլի մարմինը
+            body.execute(env)
+            // վերահաշվարկել պայմմանի արժեքը
+            cv = condition.evaluate(env) as DoubleValue
         }
-        else {
-            throw RuntimeError("Condition of WHILE must be numerical.")
-        }
-        */
     }
 
     //

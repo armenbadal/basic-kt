@@ -5,11 +5,18 @@ class Program constructor(nafa: String) {
     val fileName = nafa
     val subroutines = hashMapOf<String,Subroutine>()
 
-    //
+    // ամբողջ ծրագիր ինտերպրետացիան
     fun execute()
     {
-        for(subr in subroutines)
-            println(subr)
+        // մուտքի կետը Main ենթածրագիրն է
+        val entry = subroutines.get("Main")
+        // եթե մուտքի կետ գտնվել է, ...
+        if( entry != null ) {
+            // ապա ստեղծել դատարկ արգումենտներով Call օբյեկտ
+            val enex = Call(entry, mutableListOf<Expression>())
+            // և կատարել այն դատարկ միջավայրում
+            enex.execute(Environment())
+        }
     }
 
     //

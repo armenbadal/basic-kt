@@ -8,24 +8,24 @@ class Scanner constructor(filename : String) {
     private var line: Int = 1
 
     private val keywords = hashMapOf<String,Token>(
-            Pair("DECLARE", Token.DECLARE),
-            Pair("SUB", Token.SUBROUTINE),
-            Pair("LET", Token.LET),
-            Pair("INPUT", Token.INPUT),
-            Pair("PRINT", Token.PRINT),
-            Pair("IF", Token.IF),
-            Pair("THEN", Token.THEN),
-            Pair("ELSEIF", Token.ELSEIF),
-            Pair("ELSE", Token.ELSE),
-            Pair("WHILE", Token.WHILE),
-            Pair("FOR", Token.FOR),
-            Pair("TO", Token.TO),
-            Pair("STEP", Token.STEP),
-            Pair("CALL", Token.CALL),
-            Pair("END", Token.END),
-            Pair("AND", Token.AND),
-            Pair("OR", Token.OR),
-            Pair("NOT", Token.NOT)
+        Pair("DECLARE", Token.DECLARE),
+        Pair("SUB", Token.SUBROUTINE),
+        Pair("LET", Token.LET),
+        Pair("INPUT", Token.INPUT),
+        Pair("PRINT", Token.PRINT),
+        Pair("IF", Token.IF),
+        Pair("THEN", Token.THEN),
+        Pair("ELSEIF", Token.ELSEIF),
+        Pair("ELSE", Token.ELSE),
+        Pair("WHILE", Token.WHILE),
+        Pair("FOR", Token.FOR),
+        Pair("TO", Token.TO),
+        Pair("STEP", Token.STEP),
+        Pair("CALL", Token.CALL),
+        Pair("END", Token.END),
+        Pair("AND", Token.AND),
+        Pair("OR", Token.OR),
+        Pair("NOT", Token.NOT)
     )
 
     //

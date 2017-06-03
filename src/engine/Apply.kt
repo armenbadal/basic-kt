@@ -1,14 +1,18 @@
 
 package engine
 
-class Apply constructor(nm: String, args: MutableList<Expression>) : Expression {
-    val name = nm
+class Apply constructor(cl: Subroutine, args: MutableList<Expression>) : Expression {
+    val callee = cl
     val arguments = args
 
     //
     override fun evaluate(env: Environment) : Value
     {
-        ///val acrargs = arguments.map{ it.evaluate(env) }
+        var locals = Environment()
+        for((ix, pr) in callee.parameters.withIndex()) {
+            locals.put(pr, arguments[ix].evaluate(env))
+        }
+        callee.body?.execute(locals)
         return DoubleValue(0.0)
     }
 
@@ -16,6 +20,6 @@ class Apply constructor(nm: String, args: MutableList<Expression>) : Expression 
     override fun toString() : String
     {
         val argvs = arguments.map{ it.toString() }
-        return "$name(${argvs.joinToString(", ")})"
+        return "${callee.name}(${argvs.joinToString(", ")})"
     }
 }
