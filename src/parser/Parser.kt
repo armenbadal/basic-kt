@@ -209,7 +209,7 @@ class Parser constructor(filename: String) {
         val be = parseExpression()
         match(Token.TO)
         val en = parseExpression()
-        var sp = DoubleValue(1.0)
+        var sp = Value.Number(1.0)
         if( lookahead.kind == Token.STEP ) {
             match(Token.STEP)
             var posi = true
@@ -220,7 +220,7 @@ class Parser constructor(filename: String) {
             var spvl = lookahead.value.toDouble()
             match(Token.DOUBLE)
             spvl *= if( posi ) 1 else -1
-            sp = DoubleValue(spvl)
+            sp = Value.Number(spvl)
         }
         val bo = parseSequence()
         match(Token.END)
@@ -366,13 +366,13 @@ class Parser constructor(filename: String) {
         if( lookahead.kind == Token.DOUBLE ) {
             val num = lookahead.value.toDouble()
             match(Token.DOUBLE)
-            return DoubleValue(num)
+            return Value.Number(num)
         }
 
         if( lookahead.kind == Token.STRING ) {
             val str = lookahead.value
             match(Token.STRING)
-            return StringValue(str)
+            return Value.Text(str)
         }
 
         if( lookahead.kind == Token.IDENTIFIER ) {

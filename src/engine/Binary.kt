@@ -10,47 +10,64 @@ class Binary constructor(oc: Operation, seo: Expression, sei: Expression) : Expr
     {
         val eo = subexpro.evaluate(env)
         val ei = subexpri.evaluate(env)
-        if( eo is DoubleValue && ei is DoubleValue ) {
-            return when( opcode ) {
+        if( eo is Value.Number && ei is Value.Number) {
+            val res = when( opcode ) {
                 Operation.ADD ->
-                    DoubleValue(eo.value + ei.value)
+                    eo.value + ei.value
                 Operation.SUB ->
-                    DoubleValue(eo.value - ei.value)
+                    eo.value - ei.value
                 Operation.MUL ->
-                    DoubleValue(eo.value * ei.value)
+                    eo.value * ei.value
                 Operation.DIV ->
-                    DoubleValue(eo.value / ei.value)
+                    eo.value / ei.value
                 Operation.MOD ->
-                    DoubleValue((eo.value.toInt() % ei.value.toInt()).toDouble())
+                    (eo.value.toInt() % ei.value.toInt()).toDouble()
                 Operation.POW ->
-                    DoubleValue(Math.pow(eo.value,ei.value))
+                    Math.pow(eo.value,ei.value)
                 Operation.EQ ->
-                    DoubleValue(if( eo.value == ei.value ) 1.0 else 0.0)
+                    if( eo.value == ei.value ) 1.0 else 0.0
                 Operation.NE ->
-                    DoubleValue(if( eo.value != ei.value ) 1.0 else 0.0)
+                    if( eo.value != ei.value ) 1.0 else 0.0
                 Operation.GT ->
-                    DoubleValue(if( eo.value > ei.value ) 1.0 else 0.0)
+                    if( eo.value > ei.value ) 1.0 else 0.0
                 Operation.GE ->
-                    DoubleValue(if( eo.value >= ei.value ) 1.0 else 0.0)
+                    if( eo.value >= ei.value ) 1.0 else 0.0
                 Operation.LT ->
-                    DoubleValue(if( eo.value < ei.value ) 1.0 else 0.0)
+                    if( eo.value < ei.value ) 1.0 else 0.0
                 Operation.LE ->
-                    DoubleValue(if( eo.value <= ei.value ) 1.0 else 0.0)
+                    if( eo.value <= ei.value ) 1.0 else 0.0
                 Operation.AND ->
-                    DoubleValue(if( (eo.value != 0.0) && (ei.value != 0.0) ) 1.0 else 0.0)
+                    if( (eo.value != 0.0) && (ei.value != 0.0) ) 1.0 else 0.0
                 Operation.OR ->
-                    DoubleValue(if( (eo.value != 0.0) || (ei.value != 0.0) ) 1.0 else 0.0)
+                    if( (eo.value != 0.0) || (ei.value != 0.0) ) 1.0 else 0.0
                 else ->
                     throw RuntimeError("Unknown binary operation with numbers: '$opcode'.")
             }
+            return Value.Number(res)
         }
-        else if( eo is StringValue && ei is StringValue ) {
+        else if( eo is Value.Text && ei is Value.Text) {
+            // տողերի կոնկատենացիա
             if( opcode == Operation.CONC ) {
-                return StringValue(eo.value + ei.value)
+                return Value.Text(eo.value + ei.value)
             }
-            else {
-                throw RuntimeError("Unknown binary operation with strings: '$opcode'.")
+            // տողերի համեմատում
+            val res = when( opcode ) {
+                Operation.EQ ->
+                    if( eo.value == ei.value ) 1.0 else 0.0
+                Operation.NE ->
+                    if( eo.value != ei.value ) 1.0 else 0.0
+                Operation.GT ->
+                    if( eo.value > ei.value ) 1.0 else 0.0
+                Operation.GE ->
+                    if( eo.value >= ei.value ) 1.0 else 0.0
+                Operation.LT ->
+                    if( eo.value < ei.value ) 1.0 else 0.0
+                Operation.LE ->
+                    if( eo.value <= ei.value ) 1.0 else 0.0
+                else ->
+                    throw RuntimeError("Unknown binary operation with strings: '$opcode'.")
             }
+            return Value.Number(res)
         }
         else {
             throw RuntimeError("Uncompatible operators for '$opcode'.")

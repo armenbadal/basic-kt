@@ -17,13 +17,13 @@ class Input constructor(nm: String) : Statement {
             // ապա կարդալ մեկ տող
             val text = scan.nextLine()
             // և գրանցել կատարման միջավայրում
-            env.put(varname, StringValue(text))
+            env.put(varname, Value.Text(text))
         }
         else {
             // հակառակ դեպքում՝ կարդալ մեկ իրական թիվ
             val number = scan.nextDouble()
             // գրանցել կատարման միջավայրում
-            env.put(varname, DoubleValue(number))
+            env.put(varname, Value.Number(number))
         }
     }
 

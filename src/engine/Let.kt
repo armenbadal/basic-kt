@@ -11,10 +11,10 @@ class Let constructor(vr: String, ex: Expression) : Statement {
         // հաշվարկել վերագրվող արժեքը
         val v0 = exprval.evaluate(env)
         // ստուգել վերագրման աջ ու ձախ կողմերի տիպերի համապատասխանությունը
-        if( varname.endsWith('$') && v0 is DoubleValue) {
+        if( varname.endsWith('$') && v0 is Value.Number) {
             throw RuntimeError("Տեքստային փոփոխականին վերագրված է թվային արժեք։")
         }
-        if( !varname.endsWith('$') && v0 is StringValue) {
+        if( !varname.endsWith('$') && v0 is Value.Text) {
             throw RuntimeError("Թվային փոփոխականին վերագրված է տեքստային արժեք։")
         }
         // գրանցել միջավայրում

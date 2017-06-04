@@ -1,14 +1,20 @@
 
 package basic
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 fun main(args: Array<String>)
 {
-    /// println(args)
-    val parser = parser.Parser("C:\\Projects\\a0\\test05.bas")
-    val prog = parser.parse()
+    for( name in args ) {
+        if( Files.exists(Paths.get(name)) ) {
+            val parser = parser.Parser(name)
+            val prog = parser.parse()
 
-    if( prog != null ) {
-        println(prog.toString())
-        prog.execute()
+            if (prog != null) {
+                println(prog.toString())
+                prog.execute()
+            }
+        }
     }
 }

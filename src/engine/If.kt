@@ -10,7 +10,7 @@ class If constructor(cn: Expression, dc: Statement, al: Statement?) : Statement 
     override fun execute(env: Environment)
     {
         // հաշվել ճյուղավորման պայմանը և համոզվել որ այն թվային է
-        val cov = condition.evaluate(env) as? DoubleValue ?: throw RuntimeError("IF հրամանի պայմանը պետք է թվային լինի։")
+        val cov = condition.evaluate(env) as? Value.Number ?: throw RuntimeError("IF հրամանի պայմանը պետք է թվային լինի։")
 
         // եթե պայմանի արժեքը տարբեր է զրոյից, ...
         if( cov.value != 0.0 ) {

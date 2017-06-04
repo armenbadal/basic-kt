@@ -13,13 +13,13 @@ class For constructor(pr: String, be: Expression, en: Expression, sp: Expression
     override fun execute(env: Environment)
     {
         // հաշվարկել պարամետրի սկզբնական արժեքը և համոզվել, որ այն տեքստային չէ
-        val bev = begin.evaluate(env) as? DoubleValue ?: throw RuntimeError("FOR հրամանի սկզբնական արժեքը պետք է թվային լինի։")
+        val bev = begin.evaluate(env) as? Value.Number ?: throw RuntimeError("FOR հրամանի սկզբնական արժեքը պետք է թվային լինի։")
 
         // հաշվարկել պարամետրի վերջնական (նպատակային) արժեքը և համոզվել, որ այն տեքստային չէ
-        val nev = end.evaluate(env) as? DoubleValue ?: throw RuntimeError("FOR հրամանի վերջնական արժեքը պետք է թվային լինի։")
+        val nev = end.evaluate(env) as? Value.Number ?: throw RuntimeError("FOR հրամանի վերջնական արժեքը պետք է թվային լինի։")
 
         // հաշվել պարամետրի քայլի արժեքը և համոզվել, որ այն տեքստային չէ
-        val spv = step.evaluate(env) as? DoubleValue ?: throw RuntimeError("FOR հրամանի քայլի արժեքը պետք է թվային լինի։")
+        val spv = step.evaluate(env) as? Value.Number ?: throw RuntimeError("FOR հրամանի քայլի արժեքը պետք է թվային լինի։")
 
         // միջավայրում ավելացնել պարամետրն իր սկզբնական արժեքով
         env.put(parameter, bev)
@@ -27,7 +27,7 @@ class For constructor(pr: String, be: Expression, en: Expression, sp: Expression
         loop@
         while( true ) {
             // միջավայրից վերվնել պարամետրի ընթացիկ արժեքը
-            val pav = env[parameter] as DoubleValue
+            val pav = env[parameter] as Value.Number
             // եթե պարամետրի քայլը դրական է, ...
             if( spv.value >= 0 ) {
                 // ... ապա ցիկլն ավարտել երբ պարամետրի ընթացիկ արժեքը մեծ է վերջնական արժեքից
@@ -43,7 +43,7 @@ class For constructor(pr: String, be: Expression, en: Expression, sp: Expression
             // կատարել ցիկլի մարմինը
             body.execute(env)
             // միջավայրում գրանցել պարամետրի փոփոխված արժեքը
-            env[parameter] = DoubleValue(pav.value + spv.value)
+            env[parameter] = Value.Number(pav.value + spv.value)
         }
 
         // միջավայրից հեռացնել պարամետրը
