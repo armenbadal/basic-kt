@@ -111,7 +111,6 @@ class Parser constructor(filename: String) {
     {
         parseNewLines()
         val stats = Sequence()
-        loop@
         while( true ) {
             val esa = when( lookahead.kind ) {
                 Token.LET -> parseLet()
@@ -121,7 +120,7 @@ class Parser constructor(filename: String) {
                 Token.WHILE -> parseWhile()
                 Token.FOR -> parseFor()
                 Token.CALL -> parseCall()
-                else -> break@loop
+                else -> throw SyntaxError("Սխալ [${lookahead.line}]։ Հրամանը պետք է սկսվի LET, INPUT, PRINT, IF, WHILE, FOR կամ CALL բառերից որևէ մեկով։")
             }
             parseNewLines()
             stats.items.add(esa)
@@ -431,7 +430,7 @@ class Parser constructor(filename: String) {
             lookahead = scanner.next()
         }
         else {
-            throw SyntaxError("Syntax error: at $lookahead")
+            throw SyntaxError("Սխալ: ${lookahead.line} տողում սպասվում է $exp, բայց գրված է ${lookahead.kind}։")
         }
     }
 }
