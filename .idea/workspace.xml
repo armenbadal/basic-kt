@@ -2,18 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d60eca8f-9b24-467e-9036-7ebd3a25e374" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/engine/BuiltIn.kt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/engine/Signature.kt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Apply.kt" afterPath="$PROJECT_DIR$/src/engine/Apply.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Binary.kt" afterPath="$PROJECT_DIR$/src/engine/Binary.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Call.kt" afterPath="$PROJECT_DIR$/src/engine/Call.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/For.kt" afterPath="$PROJECT_DIR$/src/engine/For.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/If.kt" afterPath="$PROJECT_DIR$/src/engine/If.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Let.kt" afterPath="$PROJECT_DIR$/src/engine/Let.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Print.kt" afterPath="$PROJECT_DIR$/src/engine/Print.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Program.kt" afterPath="$PROJECT_DIR$/src/engine/Program.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Unary.kt" afterPath="$PROJECT_DIR$/src/engine/Unary.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/Variable.kt" afterPath="$PROJECT_DIR$/src/engine/Variable.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/engine/While.kt" afterPath="$PROJECT_DIR$/src/engine/While.kt" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,15 +18,48 @@
     <SUITE FILE_PATH="coverage/basic_kt$basic_BasicKt.coverage" NAME="basic.BasicKt Coverage Results" MODIFIED="1496688399722" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="Basic.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/basic/Basic.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="340">
+              <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding>
+                <element signature="e#16#69#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BuiltIn.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/engine/BuiltIn.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Signature.kt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/engine/Signature.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="12" column="81" lean-forward="false" selection-start-line="12" selection-start-column="81" selection-end-line="12" selection-end-column="81" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Interface" />
         <option value="Kotlin Enum" />
-        <option value="Kotlin Class" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -89,6 +113,8 @@
         <option value="$PROJECT_DIR$/src/engine/Unary.kt" />
         <option value="$PROJECT_DIR$/src/engine/Variable.kt" />
         <option value="$PROJECT_DIR$/src/engine/While.kt" />
+        <option value="$PROJECT_DIR$/src/engine/BuiltIn.kt" />
+        <option value="$PROJECT_DIR$/src/engine/Signature.kt" />
       </list>
     </option>
   </component>
@@ -126,6 +152,12 @@
               <item name="basic-kt" type="b2602c69:ProjectViewProjectNode" />
               <item name="basic-kt" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="basic-kt" type="b2602c69:ProjectViewProjectNode" />
+              <item name="basic-kt" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="engine" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -294,11 +326,19 @@
       <option name="project" value="LOCAL" />
       <updated>1496691224111</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Մանր ուղղումներ">
+      <created>1496812961998</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1496812961998</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="265" y="139" width="1333" height="822" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -309,7 +349,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32984293" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2733485" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2733485" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -333,10 +373,10 @@
     <MESSAGE value="Մասն երկրորդ" />
     <MESSAGE value="toString() մեթոդները" />
     <MESSAGE value="evaluate() և execute() մեթոդների իրականացում" />
-    <MESSAGE value="Մանր ուղղումներ" />
     <MESSAGE value="Հերթական լրացումներ" />
     <MESSAGE value="Թեսթեր" />
-    <option name="LAST_COMMIT_MESSAGE" value="Թեսթեր" />
+    <MESSAGE value="Մանր ուղղումներ" />
+    <option name="LAST_COMMIT_MESSAGE" value="Մանր ուղղումներ" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -349,21 +389,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/engine/Variable.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="30" lean-forward="false" selection-start-line="10" selection-start-column="30" selection-end-line="10" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/parser/Parser.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2703">
-          <caret line="159" column="29" lean-forward="true" selection-start-line="159" selection-start-column="29" selection-end-line="159" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/engine/Binary.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -444,16 +469,6 @@
         <state relative-caret-position="259">
           <caret line="25" column="35" lean-forward="false" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/basic/Basic.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding>
-            <element signature="e#16#69#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -687,7 +702,7 @@
         <state relative-caret-position="119">
           <caret line="7" column="60" lean-forward="false" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="60" />
           <folding>
-            <element signature="e#17#70#0" expanded="true" />
+            <element signature="e#17#70#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -704,6 +719,32 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" column="18" lean-forward="false" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/basic/Basic.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding>
+            <element signature="e#16#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/engine/BuiltIn.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/engine/Signature.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="81" lean-forward="false" selection-start-line="12" selection-start-column="81" selection-end-line="12" selection-end-column="81" />
           <folding />
         </state>
       </provider>
