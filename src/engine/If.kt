@@ -1,11 +1,7 @@
 
 package engine
 
-class If constructor(cn: Expression, dc: Statement, al: Statement?) : Statement {
-    val condition = cn
-    val decision = dc
-    var alternative = al
-
+class If constructor(val condition: Expression, val decision: Statement, var alternative: Statement?) : Statement {
     // IF հրամանի ինտերպրետացիան
     override fun execute(env: Environment)
     {

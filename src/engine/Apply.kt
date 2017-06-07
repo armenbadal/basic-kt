@@ -1,10 +1,7 @@
 
 package engine
 
-class Apply constructor(cl: Subroutine, args: MutableList<Expression>) : Expression {
-    val callee = cl
-    val arguments = args
-
+class Apply constructor(val callee: Subroutine, val arguments: MutableList<Expression>) : Expression {
     //
     override fun evaluate(env: Environment) : Value
     {

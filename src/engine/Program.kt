@@ -1,8 +1,7 @@
 
 package engine
 
-class Program constructor(nafa: String) {
-    val fileName = nafa
+class Program constructor(val filename: String) {
     val subroutines = hashMapOf<String,Subroutine>()
 
     // ամբողջ ծրագիր ինտերպրետացիան
@@ -22,7 +21,7 @@ class Program constructor(nafa: String) {
     //
     override fun toString() : String
     {
-        var res = "'\n' Source: $fileName\n'\n"
+        var res = "'\n' Source: $filename\n'\n"
         res += subroutines.values.joinToString("\n\n")
         return res
     }

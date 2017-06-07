@@ -1,9 +1,7 @@
 
 package engine
 
-class Print constructor(ex: Expression) : Statement {
-    val subexpr = ex
-
+class Print constructor(val subexpr: Expression) : Statement {
     // PRINT հրամանի ինտերպրետացիան
     override fun execute(env: Environment)
     {

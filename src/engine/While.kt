@@ -1,10 +1,7 @@
 
 package engine
 
-class While constructor(cn: Expression, bo: Statement) : Statement {
-    val condition = cn
-    val body = bo
-
+class While constructor(val condition: Expression, val body: Statement) : Statement {
     // WHILE հրամանի ինտերպրետացիան
     override fun execute(env: Environment)
     {

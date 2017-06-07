@@ -1,12 +1,10 @@
 package engine
 
-class For constructor(pr: String, be: Expression, en: Expression, sp: Expression, bo: Statement) : Statement {
-    val parameter = pr
-    val begin = be
-    val end = en
-    val step = sp
-    val body = bo
-
+class For constructor(val parameter: String,
+                      val begin: Expression,
+                      val end: Expression,
+                      val step: Expression,
+                      val body: Statement) : Statement {
     //
     // FOR հրամանի ինտերպրետացիան
     //

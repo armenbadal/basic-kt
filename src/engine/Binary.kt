@@ -1,10 +1,6 @@
 package engine
 
-class Binary constructor(oc: Operation, seo: Expression, sei: Expression) : Expression {
-    val opcode = oc
-    val subexpro = seo
-    val subexpri = sei
-
+class Binary constructor(val opcode: Operation, val subexpro: Expression, val subexpri: Expression) : Expression {
     //
     override fun evaluate(env: Environment) : Value
     {

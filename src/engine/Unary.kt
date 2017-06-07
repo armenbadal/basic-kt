@@ -1,10 +1,7 @@
 
 package engine
 
-class Unary constructor(oc: Operation, se: Expression) : Expression {
-    val opcode = oc
-    val subexpr = se
-
+class Unary constructor(val opcode: Operation, val subexpr: Expression) : Expression {
     //
     override fun evaluate(env: Environment) : Value
     {
