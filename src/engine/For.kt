@@ -1,3 +1,4 @@
+
 package engine
 
 class For constructor(val parameter: String,
@@ -46,15 +47,5 @@ class For constructor(val parameter: String,
 
         // միջավայրից հեռացնել պարամետրը
         env.remove(parameter)
-    }
-
-    //
-    override fun toString() : String
-    {
-        var res = "FOR $parameter = ${begin.toString()} "
-        res += "TO ${end.toString()} "
-        res += "STEP ${step.toString()}\n"
-        res += body.toString() + "\nEND FOR"
-        return res
     }
 }

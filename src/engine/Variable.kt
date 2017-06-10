@@ -7,5 +7,6 @@ class Variable constructor(val name: String) : Expression {
         = env[name] ?: throw RuntimeError("Չարժեքավորված փոփոխական. '$name'։")
 
     //
-    override fun toString() : String = name
+    override fun type(): Type =
+        typeOf(name)
 }

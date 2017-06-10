@@ -1,11 +1,13 @@
+
 package engine
 
 class Binary constructor(val opcode: Operation, val subexpro: Expression, val subexpri: Expression) : Expression {
     //
-    override fun evaluate(env: Environment) : Value
+    override fun evaluate(env: Environment): Value
     {
         val eo = subexpro.evaluate(env)
         val ei = subexpri.evaluate(env)
+
         if( eo is Value.Number && ei is Value.Number) {
             val res = when( opcode ) {
                 Operation.ADD ->
@@ -41,7 +43,8 @@ class Binary constructor(val opcode: Operation, val subexpro: Expression, val su
             }
             return Value.Number(res)
         }
-        else if( eo is Value.Text && ei is Value.Text) {
+
+        if( eo is Value.Text && ei is Value.Text) {
             // տողերի կոնկատենացիա
             if( opcode == Operation.CONC ) {
                 return Value.Text(eo.value + ei.value)
@@ -65,12 +68,30 @@ class Binary constructor(val opcode: Operation, val subexpro: Expression, val su
             }
             return Value.Number(res)
         }
-        else {
-            throw RuntimeError("Uncompatible operators for '$opcode'.")
-        }
+
+        throw RuntimeError("Uncompatible operators for '$opcode'.")
     }
 
     //
-    override fun toString() : String =
-        "($subexpro $opcode $subexpri)"
+    override fun type(): Type
+    {
+        val vo = subexpro.type()
+        val vi = subexpri.type()
+
+        if( vo == Type.NUMBER && vi == Type.NUMBER ) {
+            if( opcode != Operation.CONC ) {
+                return Type.NUMBER
+            }
+        }
+        else if( vo == Type.TEXT && vi == Type.TEXT ) {
+            if( opcode == Operation.CONC ) {
+                return Type.TEXT
+            }
+            if( opcode in Operation.EQ..Operation.LE ) {
+                return Type.NUMBER
+            }
+        }
+
+        throw TypeError("Տիպերի անհամապատասխանություն։")
+    }
 }

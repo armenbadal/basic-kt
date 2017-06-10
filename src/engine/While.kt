@@ -15,8 +15,4 @@ class While constructor(val condition: Expression, val body: Statement) : Statem
             cv = condition.evaluate(env) as Value.Number
         }
     }
-
-    //
-    override fun toString() : String =
-        "WHILE $condition\n$body\nEND WHILE"
 }

@@ -10,8 +10,4 @@ class Sequence : Statement {
         // հերթով կատարել հաջորդականության ամեն մի տարրը
         items.forEach { it.execute(env) }
     }
-
-    //
-    override fun toString() : String =
-        items.joinToString("\n")
 }

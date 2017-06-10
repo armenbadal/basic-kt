@@ -4,6 +4,10 @@ package engine
 class Program constructor(val filename: String) {
     val subroutines = hashMapOf<String,Subroutine>()
 
+    init {
+        subroutines["STR$"] = Subroutine.BuiltIn("STR$", Type.TEXT, listOf(Type.NUMBER))
+    }
+
     // ամբողջ ծրագիր ինտերպրետացիան
     fun execute()
     {
@@ -12,17 +16,9 @@ class Program constructor(val filename: String) {
         // եթե մուտքի կետ գտնվել է, ...
         if( entry != null ) {
             // ապա ստեղծել դատարկ արգումենտներով Call օբյեկտ
-            val enex = Call(entry, mutableListOf<Expression>())
+            val enex = Call(entry, listOf<Expression>())
             // և կատարել այն դատարկ միջավայրում
             enex.execute(Environment())
         }
-    }
-
-    //
-    override fun toString() : String
-    {
-        var res = "'\n' Source: $filename\n'\n"
-        res += subroutines.values.joinToString("\n\n")
-        return res
     }
 }

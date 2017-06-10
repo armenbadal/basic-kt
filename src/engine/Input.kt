@@ -2,9 +2,7 @@
 package engine
 
 //
-class Input constructor(nm: String) : Statement {
-    val varname = nm
-
+class Input constructor(val varname: String) : Statement {
     // INPUT հարամանի ինտերպրետացիան
     override fun execute(env: Environment)
     {
@@ -26,8 +24,4 @@ class Input constructor(nm: String) : Statement {
             env.put(varname, Value.Number(number))
         }
     }
-
-    //
-    override fun toString() : String =
-        "INPUT $varname"
 }

@@ -4,22 +4,22 @@ package parser
 import engine.*
 
 class Parser constructor(filename: String) {
-    val scanner = Scanner(filename)
-    var lookahead = scanner.next()
+    private val scanner = Scanner(filename)
+    private var lookahead = scanner.next()
 
-    val FirstOfExpr = setOf(Token.DOUBLE, Token.STRING,
+    private val FirstOfExpr = setOf(Token.DOUBLE, Token.STRING,
             Token.IDENTIFIER, Token.SUB, Token.NOT, Token.LEFTPAR)
 
     //
     private val program = Program(filename)
 
     //
-    fun parse() : Program?
+    fun parse(): Program?
     {
         try {
             parseProgram()
         }
-        catch(se: SyntaxError) {
+        catch(se: Exception) {
             println(se)
             return null
         }
@@ -27,7 +27,8 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseProgram() {
+    private fun parseProgram()
+    {
         while( lookahead.kind == Token.NEWLINE ) {
             match(Token.NEWLINE)
         }
@@ -49,16 +50,20 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseDeclare() : Subroutine
+    private fun parseDeclare(): Subroutine
     {
         match(Token.DECLARE)
-        return parseSubrHeader()
+        val shead = parseSubrHeader()
+        // TODO check
+        return Subroutine.UserDefined(shead.first, shead.second)
     }
 
     //
-    private fun parseSubroutine() : Subroutine
+    private fun parseSubroutine(): Subroutine
     {
-        val subr = parseSubrHeader()
+        val shead = parseSubrHeader()
+        // TODO check
+        val subr = Subroutine.UserDefined(shead.first, shead.second)
         subr.body = parseSequence()
         match(Token.END)
         match(Token.SUBROUTINE)
@@ -75,7 +80,7 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseSubrHeader() : Subroutine
+    private fun parseSubrHeader(): Pair<String,List<String>>
     {
         match(Token.SUBROUTINE)
         val name = lookahead.value
@@ -97,20 +102,23 @@ class Parser constructor(filename: String) {
             match(Token.RIGHTPAR)
         }
 
-        var subr = program.subroutines[name] ?: Subroutine(name, params, null)
-        if( subr.parameters.count() != params.count() ) {
-            throw SyntaxError("'$name' ենթածրագիրն արդեն հայտարարված/սահմանված է այլ պարամետրերով։")
-        }
-        // TODO ստուգել նաև պարամետրերի տիպերի համապատասխանությունը
-        program.subroutines[name] = subr
-        return subr
+//        val sigact = Signature(typeOf(name), params.map(::typeOf))
+//        if( program.subroutines.containsKey(name) ) {
+//            val sigexp = program.subroutines[name]?.signature()
+//            if( sigact != sigexp ) {
+//                throw ParseError("Սխալ։ '$name' ենթածրագիրը արդեն սահմանված է '$sigexp' տիպով։")
+//            }
+//        }
+
+        return Pair(name, params)
     }
 
     //
-    private fun parseSequence() : Statement
+    private fun parseSequence(): Statement
     {
         parseNewLines()
         val stats = Sequence()
+        loop@
         while( true ) {
             val esa = when( lookahead.kind ) {
                 Token.LET -> parseLet()
@@ -120,7 +128,7 @@ class Parser constructor(filename: String) {
                 Token.WHILE -> parseWhile()
                 Token.FOR -> parseFor()
                 Token.CALL -> parseCall()
-                else -> throw SyntaxError("Սխալ [${lookahead.line}]։ Հրամանը պետք է սկսվի LET, INPUT, PRINT, IF, WHILE, FOR կամ CALL բառերից որևէ մեկով։")
+                else -> break@loop
             }
             parseNewLines()
             stats.items.add(esa)
@@ -129,18 +137,7 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseLet() : Statement
-    {
-        match(Token.LET)
-        val nm = lookahead.value
-        match(Token.IDENTIFIER)
-        match(Token.EQ)
-        val ve = parseExpression()
-        return Let(nm, ve)
-    }
-
-    //
-    private fun parseInput() : Statement
+    private fun parseInput(): Statement
     {
         match(Token.INPUT)
         val nm = lookahead.value
@@ -149,7 +146,7 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parsePrint() : Statement
+    private fun parsePrint(): Statement
     {
         match(Token.PRINT)
         val exo = parseExpression()
@@ -157,20 +154,41 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseIf() : Statement
+    private fun parseLet(): Statement
+    {
+        val cli = lookahead.line
+        match(Token.LET)
+        val nm = lookahead.value
+        match(Token.IDENTIFIER)
+        match(Token.EQ)
+        val ve = parseExpression()
+
+        // ստուգել վերագրման աջ ու ձախ կողմերի տիպերի համապատասխանությունը
+        if( Type.TEXT == typeOf(nm) && Type.NUMBER == ve.type() ) {
+            throw RuntimeError("Սխալ [$cli]։ Տեքստային փոփոխականին վերագրված է թվային արժեք։")
+        }
+        if( Type.NUMBER == typeOf(nm) && Type.TEXT == ve.type() ) {
+            throw RuntimeError("Սխալ [$cli]։ Թվային փոփոխականին վերագրված է տեքստային արժեք։")
+        }
+
+        return Let(nm, ve)
+    }
+
+    //
+    private fun parseIf(): Statement
     {
         match(Token.IF)
         val cono = parseExpression()
         match(Token.THEN)
         val deco = parseSequence()
-        var resu = If(cono, deco, null)
+        val resu = If(cono, deco, null)
         var bi = resu
         while( lookahead.kind == Token.ELSEIF ) {
             match(Token.ELSEIF)
             val coni = parseExpression()
             match(Token.THEN)
             val deci = parseSequence()
-            var bre = If(coni, deci, null)
+            val bre = If(coni, deci, null)
             bi.alternative = bre
             bi = bre
         }
@@ -185,7 +203,7 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseWhile() : Statement
+    private fun parseWhile(): Statement
     {
         match(Token.WHILE)
         val cond = parseExpression()
@@ -196,13 +214,13 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseFor() : Statement
+    private fun parseFor(): Statement
     {
         match(Token.FOR)
         val pr = lookahead.value
         match(Token.IDENTIFIER)
-        if( pr.endsWith('$') ) {
-            throw SyntaxError("FOR հրամանի պարամետրը պետք է թվային լինի։")
+        if( Type.NUMBER != typeOf(pr) ) {
+            throw ParseError("FOR հրամանի պարամետրը պետք է թվային լինի։")
         }
         match(Token.EQ)
         val be = parseExpression()
@@ -228,7 +246,7 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun parseCall() : Statement
+    private fun parseCall(): Statement
     {
         match(Token.CALL)
         val name = lookahead.value
@@ -243,39 +261,61 @@ class Parser constructor(filename: String) {
                 args.add(e0)
             }
         }
-        if( !program.subroutines.containsKey(name) ) {
-            throw SyntaxError("Subroutine '$name' dot declared/defined.")
+        val sigact = Signature(typeOf(name), args.map{ it.type() })
+
+//        // ներդրված ենթածրագրի կիրառում
+//        if( BuiltInSubroutines.containsKey(name) ) {
+//            val sigdcl = BuiltInSubroutines[name]
+//            if( sigact != sigdcl ) {
+//                throw ParseError("'$name'-ն հայտարարված է '$sigact', կիրառված է՝ '$sigdcl'։")
+//            }
+//            return Call(Subroutine.BuiltIn(name), args)
+//        }
+
+        // սահմանված ենթածրագրի կիրառում
+        if( program.subroutines.containsKey(name) ) {
+            val sigdcl = program.subroutines[name]?.signature()
+            if( sigact != sigdcl ) {
+                throw ParseError("'$name'-ն հայտարարված է '$sigact', կիրառված է՝ '$sigdcl'։")
+            }
+            return Call(program.subroutines[name]!!, args)
         }
-        val cal = program.subroutines.get(name)
-        return Call(cal!!, args)
+
+        throw ParseError("Subroutine '$name' dot declared/defined.")
     }
 
     //
-    private fun parseExpression() : Expression
+    private fun parseExpression(): Expression
     {
         var e0 = parseConjunction()
         while( lookahead.kind == Token.OR ) {
             match(Token.OR)
             val e1 = parseConjunction()
+            if( Type.NUMBER != e0.type() || Type.NUMBER != e1.type() ) {
+                throw TypeError("'OR' գործողության արգումենտների տիպերը պետք է թվային լինեն։")
+            }
             e0 = Binary(Operation.OR, e0, e1)
         }
         return e0
     }
 
     //
-    private fun parseConjunction() : Expression
+    private fun parseConjunction(): Expression
     {
         var e0 = parseEquality()
         while( lookahead.kind == Token.AND ) {
             match(Token.AND)
             val e1 = parseEquality()
+            if( Type.NUMBER != e0.type() || Type.NUMBER != e1.type() ) {
+                throw TypeError("'AND' գործողության արգումենտների տիպերը պետք է թվային լինեն։")
+            }
             e0 = Binary(Operation.AND, e0, e1)
         }
         return e0
     }
 
     //
-    private fun parseEquality() : Expression
+    private fun parseEquality(): Expression
     {
         var e0 = parseComparison()
         if( lookahead.kind == Token.EQ || lookahead.kind == Token.NE ) {
@@ -286,13 +326,16 @@ class Parser constructor(filename: String) {
             }
             match(lookahead.kind)
             val e1 = parseComparison()
+            if( e0.type() != e1.type() ) {
+                throw TypeError("'$opc' գործողության արգումենտների տիպերը տարբեր են։")
+            }
             e0 = Binary(opc, e0, e1)
         }
         return e0
     }
 
     //
-    private fun parseComparison() : Expression
+    private fun parseComparison(): Expression
     {
         var e0 = parseAddition()
         if( lookahead.kind in Token.GT .. Token.LE ) {
@@ -305,13 +348,16 @@ class Parser constructor(filename: String) {
             }
             match(lookahead.kind)
             val e1 = parseAddition()
+            if( e0.type() != e1.type() ) {
+                throw TypeError("'$opc' գործողության արգումենտների տիպերը տարբեր են։")
+            }
             e0 = Binary(opc, e0, e1)
         }
         return e0
     }
 
     //
-    private fun parseAddition() : Expression
+    private fun parseAddition(): Expression
     {
         var e0 = parseMultiplication()
         loop@
@@ -324,13 +370,23 @@ class Parser constructor(filename: String) {
             }
             match(lookahead.kind)
             val e1 = parseMultiplication()
+            if( opc == Operation.CONC ) {
+                if( Type.TEXT != e0.type() || Type.TEXT != e1.type() ) {
+                    throw TypeError("'$opc' գործողության արգումենտները պետք է տեքստային լինեն։")
+                }
+            }
+            else {
+                if( Type.NUMBER != e0.type() || Type.NUMBER != e1.type() ) {
+                    throw TypeError("'$opc' գործողության արգումենտները պետք է թվային լինեն։")
+                }
+            }
             e0 = Binary(opc, e0, e1)
         }
         return e0
     }
 
     //
-    private fun parseMultiplication() : Expression
+    private fun parseMultiplication(): Expression
     {
         var e0 = parsePower()
         while( lookahead.kind in Token.MUL .. Token.MOD ) {
@@ -342,25 +398,31 @@ class Parser constructor(filename: String) {
             }
             match(lookahead.kind)
             val e1 = parsePower()
+            if( Type.NUMBER != e0.type() || Type.NUMBER != e1.type() ) {
+                throw TypeError("'$opc' գործողության արգումենտները պետք է թվային լինեն։")
+            }
             e0 = Binary(opc, e0, e1)
         }
         return e0
     }
 
     //
-    private fun parsePower() : Expression
+    private fun parsePower(): Expression
     {
         var e0 = parseFactor()
         if( lookahead.kind == Token.POW ) {
             match(Token.POW)
             val e1 = parsePower()
+            if( Type.NUMBER != e0.type() || Type.NUMBER != e1.type() ) {
+                throw TypeError("'^' գործողության արգումենտները պետք է թվային լինեն։")
+            }
             e0 = Binary(Operation.POW, e0, e1)
         }
         return e0
     }
 
     //
-    private fun parseFactor() : Expression
+    private fun parseFactor(): Expression
     {
         if( lookahead.kind == Token.DOUBLE ) {
             val num = lookahead.value.toDouble()
@@ -391,9 +453,9 @@ class Parser constructor(filename: String) {
                 }
                 match(Token.RIGHTPAR)
                 if( !program.subroutines.containsKey(name) ) {
-                    throw SyntaxError("Subroutine '$name' dot declared/defined.")
+                    throw ParseError("Subroutine '$name' dot declared/defined.")
                 }
-                val cal = program.subroutines.get(name)
+                val cal = program.subroutines[name]
                 return Apply(cal!!, args)
             }
             else {
@@ -401,16 +463,19 @@ class Parser constructor(filename: String) {
             }
         }
 
-        if( lookahead.kind == Token.SUB ) {
-            match(Token.SUB)
+        if( lookahead.kind == Token.SUB || lookahead.kind == Token.NOT ) {
+            val cli = lookahead.line
+            val opc = when( lookahead.kind ) {
+                Token.SUB -> Operation.SUB
+                Token.NOT -> Operation.NOT
+                else -> Operation.NONE
+            }
+            match(lookahead.kind)
             val expr = parseFactor()
-            return Unary(Operation.SUB, expr)
-        }
-
-        if( lookahead.kind == Token.NOT ) {
-            match(Token.NOT)
-            val expr = parseFactor()
-            return Unary(Operation.NOT, expr)
+            if( Type.NUMBER != expr.type() ) {
+                throw TypeError("Սխալ [$cli]։ Ժխտման ու բացասման արգումենտը պետք է թվային լինեն։")
+            }
+            return Unary(opc, expr)
         }
 
         if( lookahead.kind == Token.LEFTPAR ) {
@@ -420,7 +485,7 @@ class Parser constructor(filename: String) {
             return expr
         }
 
-        throw SyntaxError("Unexpected token '$lookahead'.")
+        throw ParseError("Unexpected token '$lookahead'.")
     }
 
     //
@@ -430,7 +495,7 @@ class Parser constructor(filename: String) {
             lookahead = scanner.next()
         }
         else {
-            throw SyntaxError("Սխալ: ${lookahead.line} տողում սպասվում է $exp, բայց գրված է ${lookahead.kind}։")
+            throw ParseError("Սխալ: ${lookahead.line} տողում սպասվում է $exp, բայց գրված է ${lookahead.kind}։")
         }
     }
 }

@@ -17,4 +17,7 @@ class Unary constructor(val opcode: Operation, val subexpr: Expression) : Expres
 
         throw RuntimeError("Runtime error")
     }
+
+    //
+    override fun type(): Type = Type.NUMBER
 }

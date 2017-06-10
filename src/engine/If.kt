@@ -19,22 +19,4 @@ class If constructor(val condition: Expression, val decision: Statement, var alt
             if( alternative != null ) alternative!!.execute(env)
         }
     }
-
-    //
-    override fun toString(): String
-    {
-        var res = "IF $condition THEN\n"
-        res += decision.toString()
-        var bi = alternative
-        while( bi is If ) {
-            res += "\nELSEIF ${bi.condition} THEN\n"
-            res += bi.decision.toString()
-            bi = bi.alternative
-        }
-        if( bi != null ) {
-            res += "\nELSE\n$bi"
-        }
-        res += "\nEND IF"
-        return res
-    }
 }

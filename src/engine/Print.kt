@@ -10,8 +10,4 @@ class Print constructor(val subexpr: Expression) : Statement {
         // արտածել
         println(vds)
     }
-
-    //
-    override fun toString() : String =
-        "PRINT ${subexpr.toString()}"
 }

@@ -1,7 +1,7 @@
 
 package engine
 
-class Call constructor(cl: Subroutine, ags: MutableList<Expression>) : Statement {
+class Call constructor(cl: Subroutine, ags: List<Expression>) : Statement {
     val clapp = Apply(cl, ags)
 
     //
@@ -9,8 +9,4 @@ class Call constructor(cl: Subroutine, ags: MutableList<Expression>) : Statement
     {
         clapp.evaluate(env)
     }
-
-    //
-    override fun toString() : String =
-        "CALL ${clapp.toString()}"
 }
