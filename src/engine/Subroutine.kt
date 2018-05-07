@@ -2,22 +2,12 @@
 package engine
 
 //
-data class Signature constructor(val result: Type, val inputs: List<Type>) {
-    constructor(rs: Type, vararg ins: Type) : this(rs, ins.asList())
-
-    override fun toString(): String =
-        inputs.joinToString(separator = " × ") + " → " + result
-}
-
-//
 abstract class Subroutine constructor(val name: String) {
     abstract operator fun invoke(args: List<Value>): Value
     abstract fun signature(): Signature
 
     //
-    class UserDefined constructor(nm: String, val parameters: List<String>) : Subroutine(nm) {
-        var body: Statement? = null
-
+    class UserDefined constructor(nm: String, val parameters: List<String>, val body: Statement) : Subroutine(nm) {
         //
         override operator fun invoke(args: List<Value>): Value
         {

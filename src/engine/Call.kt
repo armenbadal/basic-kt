@@ -1,12 +1,10 @@
 
 package engine
 
-class Call constructor(cl: Subroutine, ags: List<Expression>) : Statement {
-    val clapp = Apply(cl, ags)
-
+class Call constructor(var callee: Subroutine, val arguments: List<Expression>) : Statement {
     //
     override fun execute(env: Environment)
     {
-        clapp.evaluate(env)
+        Apply(callee, arguments).evaluate(env)
     }
 }

@@ -7,8 +7,15 @@ class Parser constructor(filename: String) {
     private val scanner = Scanner(filename)
     private var lookahead = scanner.next()
 
-    private val FirstOfExpr = setOf(Token.DOUBLE, Token.STRING,
+    private val firstOfExpr = setOf(Token.DOUBLE, Token.STRING,
             Token.IDENTIFIER, Token.SUB, Token.NOT, Token.LEFTPAR)
+
+    //
+    class CallOrApply constructor(val call: Call?, val apply: Apply?) {
+        fun isCall() = call != null && apply == null
+        fun isApply() = !isCall()
+    }
+    private var subrLinks = hashMapOf<String,MutableList<CallOrApply>>()
 
     //
     private val program = Program(filename)
@@ -33,41 +40,57 @@ class Parser constructor(filename: String) {
             match(Token.NEWLINE)
         }
 
-        while( true ) {
-            if( lookahead.kind == Token.DECLARE ) {
-                val subr = parseDeclare()
-                program.subroutines.put(subr.name, subr)
-            }
-            else if( lookahead.kind == Token.SUBROUTINE ) {
-                val subr = parseSubroutine()
-                program.subroutines.put(subr.name, subr)
-            }
-            else {
-                break
-            }
+        while( lookahead.kind == Token.SUBROUTINE ) {
+            val subr = parseSubroutine()
+            program.subroutines.put(subr.name, subr)
             parseNewLines()
         }
     }
 
     //
-    private fun parseDeclare(): Subroutine
-    {
-        match(Token.DECLARE)
-        val shead = parseSubrHeader()
-        // TODO check
-        return Subroutine.UserDefined(shead.first, shead.second)
-    }
-
-    //
     private fun parseSubroutine(): Subroutine
     {
-        val shead = parseSubrHeader()
-        // TODO check
-        val subr = Subroutine.UserDefined(shead.first, shead.second)
-        subr.body = parseSequence()
+        // վերնագիր
+        match(Token.SUBROUTINE)
+        // անուն
+        val name = match(Token.IDENTIFIER)
+        val params = mutableListOf<String>()
+        // պարամետրերի ցուցակ, որը կարող է բացակայել
+        if( lookahead.kind == Token.LEFTPAR ) {
+            match(Token.LEFTPAR)
+            if( lookahead.kind == Token.IDENTIFIER ) {
+                val p0 = match(Token.IDENTIFIER)
+                params.add(p0)
+                while( lookahead.kind == Token.COMMA ) {
+                    match(Token.COMMA)
+                    val p1 = match(Token.IDENTIFIER)
+                    params.add(p1)
+                }
+            }
+            match(Token.RIGHTPAR)
+        }
+        // մարմին
+        val body = parseSequence()
+        // ավարտ
         match(Token.END)
         match(Token.SUBROUTINE)
-        return subr
+        // ենթածրագրի կառուցում
+        val subro = Subroutine.UserDefined(name, params, body)
+
+        // վատ հղումների կարգավորում -- վերանայել
+        if( subrLinks.containsKey(name) ) {
+            for(ca in subrLinks[name]!!) {
+                if( ca.isCall() ) {
+                    ca.call!!.callee = subro
+                }
+                else if( ca.isApply() ) {
+                    ca.apply!!.callee = subro
+                }
+            }
+            subrLinks.remove(name)
+        }
+
+        return subro
     }
 
     //
@@ -77,40 +100,6 @@ class Parser constructor(filename: String) {
         while( lookahead.kind == Token.NEWLINE ) {
             match(Token.NEWLINE)
         }
-    }
-
-    //
-    private fun parseSubrHeader(): Pair<String,List<String>>
-    {
-        match(Token.SUBROUTINE)
-        val name = lookahead.value
-        match(Token.IDENTIFIER)
-        val params = mutableListOf<String>()
-        if( lookahead.kind == Token.LEFTPAR ) {
-            match(Token.LEFTPAR)
-            if( lookahead.kind == Token.IDENTIFIER ) {
-                val p0 = lookahead.value
-                match(Token.IDENTIFIER)
-                params.add(p0)
-                while( lookahead.kind == Token.COMMA ) {
-                    match(Token.COMMA)
-                    val p1 = lookahead.value
-                    match(Token.IDENTIFIER)
-                    params.add(p1)
-                }
-            }
-            match(Token.RIGHTPAR)
-        }
-
-//        val sigact = Signature(typeOf(name), params.map(::typeOf))
-//        if( program.subroutines.containsKey(name) ) {
-//            val sigexp = program.subroutines[name]?.signature()
-//            if( sigact != sigexp ) {
-//                throw ParseError("Սխալ։ '$name' ենթածրագիրը արդեն սահմանված է '$sigexp' տիպով։")
-//            }
-//        }
-
-        return Pair(name, params)
     }
 
     //
@@ -140,8 +129,7 @@ class Parser constructor(filename: String) {
     private fun parseInput(): Statement
     {
         match(Token.INPUT)
-        val nm = lookahead.value
-        match(Token.IDENTIFIER)
+        val nm = match(Token.IDENTIFIER)
         return Input(nm)
     }
 
@@ -158,8 +146,7 @@ class Parser constructor(filename: String) {
     {
         val cli = lookahead.line
         match(Token.LET)
-        val nm = lookahead.value
-        match(Token.IDENTIFIER)
+        val nm = match(Token.IDENTIFIER)
         match(Token.EQ)
         val ve = parseExpression()
 
@@ -217,8 +204,7 @@ class Parser constructor(filename: String) {
     private fun parseFor(): Statement
     {
         match(Token.FOR)
-        val pr = lookahead.value
-        match(Token.IDENTIFIER)
+        val pr = match(Token.IDENTIFIER)
         if( Type.NUMBER != typeOf(pr) ) {
             throw ParseError("FOR հրամանի պարամետրը պետք է թվային լինի։")
         }
@@ -245,14 +231,13 @@ class Parser constructor(filename: String) {
         return For(pr, be, en, sp, bo)
     }
 
-    //
+    // ենթածրագրի կիրառում որպես հրաման (պրոցեդուրա)
     private fun parseCall(): Statement
     {
         match(Token.CALL)
-        val name = lookahead.value
-        match(Token.IDENTIFIER)
+        val name = match(Token.IDENTIFIER)
         val args = mutableListOf<Expression>()
-        if( FirstOfExpr.contains(lookahead.kind) ) {
+        if( firstOfExpr.contains(lookahead.kind) ) {
             var e0 = parseExpression()
             args.add(e0)
             while( lookahead.kind == Token.COMMA ) {
@@ -261,27 +246,30 @@ class Parser constructor(filename: String) {
                 args.add(e0)
             }
         }
+
         val sigact = Signature(typeOf(name), args.map{ it.type() })
 
-//        // ներդրված ենթածրագրի կիրառում
-//        if( BuiltInSubroutines.containsKey(name) ) {
-//            val sigdcl = BuiltInSubroutines[name]
-//            if( sigact != sigdcl ) {
-//                throw ParseError("'$name'-ն հայտարարված է '$sigact', կիրառված է՝ '$sigdcl'։")
-//            }
-//            return Call(Subroutine.BuiltIn(name), args)
-//        }
-
+        val subrex = program.subroutines[name]
         // սահմանված ենթածրագրի կիրառում
-        if( program.subroutines.containsKey(name) ) {
-            val sigdcl = program.subroutines[name]?.signature()
+        if( subrex != null ) {
+            val sigdcl = subrex.signature()
             if( sigact != sigdcl ) {
                 throw ParseError("'$name'-ն հայտարարված է '$sigact', կիրառված է՝ '$sigdcl'։")
             }
-            return Call(program.subroutines[name]!!, args)
+            return Call(subrex, args)
         }
 
-        throw ParseError("Subroutine '$name' dot declared/defined.")
+        // TODO: վերանայել
+        val call = Call(Subroutine.UserDefined(
+                if( Type.NUMBER == typeOf(name) ) "--dummy--" else "--dummy--$",
+                args.map{ if( Type.NUMBER == it.type() ) "~" else "~$" },
+                Sequence()), args)
+        if( !subrLinks.containsKey(name) ) {
+            subrLinks[name] = mutableListOf<CallOrApply>()
+        }
+        subrLinks[name]!!.add(CallOrApply(call, null))
+
+        return call
     }
 
     //
@@ -431,18 +419,16 @@ class Parser constructor(filename: String) {
         }
 
         if( lookahead.kind == Token.STRING ) {
-            val str = lookahead.value
-            match(Token.STRING)
+            val str = match(Token.STRING)
             return Value.Text(str)
         }
 
         if( lookahead.kind == Token.IDENTIFIER ) {
-            val name = lookahead.value
-            match(Token.IDENTIFIER)
+            val name = match(Token.IDENTIFIER)
             if( lookahead.kind == Token.LEFTPAR ) {
                 val args = mutableListOf<Expression>()
                 match(Token.LEFTPAR)
-                if( FirstOfExpr.contains(lookahead.kind) ) {
+                if( firstOfExpr.contains(lookahead.kind) ) {
                     var e0 = parseExpression()
                     args.add(e0)
                     while( lookahead.kind == Token.COMMA ) {
@@ -489,13 +475,14 @@ class Parser constructor(filename: String) {
     }
 
     //
-    private fun match(exp: Token)
+    private fun match(exp: Token): String
     {
         if( lookahead.kind == exp ) {
+            val lex = lookahead.value;
             lookahead = scanner.next()
+            return lex
         }
-        else {
-            throw ParseError("Սխալ: ${lookahead.line} տողում սպասվում է $exp, բայց գրված է ${lookahead.kind}։")
-        }
+
+        throw ParseError("Սխալ: ${lookahead.line} տողում սպասվում է $exp, բայց գրված է ${lookahead.kind}։")
     }
 }

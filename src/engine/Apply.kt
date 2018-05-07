@@ -1,9 +1,9 @@
 
 package engine
 
-class Apply constructor(val callee: Subroutine, val arguments: List<Expression>) : Expression {
+class Apply constructor(var callee: Subroutine, val arguments: List<Expression>) : Expression {
     //
-    override fun evaluate(env: Environment) : Value
+    override fun evaluate(env: Environment): Value
     {
         return callee(arguments.map{ it.evaluate(env) })
     }

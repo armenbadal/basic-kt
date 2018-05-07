@@ -69,6 +69,7 @@ class Scanner constructor(filename : String) {
                 ch = input.next()
             }
             if( ch == '.' ) {
+                s += '.'
                 ch = input.next()
                 while( ch.isDigit() ) {
                     s += ch
