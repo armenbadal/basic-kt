@@ -1,129 +1,73 @@
 
 package parser
 
-//
-class Scanner constructor(filename : String) {
-    private val input = Source(filename).iterator()
-    private var ch : Char = input.next()
-    private var line: Int = 1
+import java.lang.StringBuilder
+import java.nio.file.Files
+import java.nio.file.Paths
 
-    private val keywords = hashMapOf<String,Token>(
-        Pair("DECLARE", Token.DECLARE),
-        Pair("SUB", Token.SUBROUTINE),
-        Pair("LET", Token.LET),
-        Pair("INPUT", Token.INPUT),
-        Pair("PRINT", Token.PRINT),
-        Pair("IF", Token.IF),
-        Pair("THEN", Token.THEN),
-        Pair("ELSEIF", Token.ELSEIF),
-        Pair("ELSE", Token.ELSE),
-        Pair("WHILE", Token.WHILE),
-        Pair("FOR", Token.FOR),
-        Pair("TO", Token.TO),
-        Pair("STEP", Token.STEP),
-        Pair("CALL", Token.CALL),
-        Pair("END", Token.END),
-        Pair("AND", Token.AND),
-        Pair("OR", Token.OR),
-        Pair("NOT", Token.NOT)
+class Scanner constructor(filename: String) {
+    private val keywords = mapOf(
+            "SUB"    to Token.SUBROUTINE,
+            "LET"    to Token.LET,
+            "INPUT"  to Token.INPUT,
+            "PRINT"  to Token.PRINT,
+            "IF"     to Token.IF,
+            "THEN"   to Token.THEN,
+            "ELSEIF" to Token.ELSEIF,
+            "ELSE"   to Token.ELSE,
+            "WHILE"  to Token.WHILE,
+            "FOR"    to Token.FOR,
+            "TO"     to Token.TO,
+            "STEP"   to Token.STEP,
+            "CALL"   to Token.CALL,
+            "END"    to Token.END,
+            "AND"    to Token.AND,
+            "OR"     to Token.OR,
+            "NOT"    to Token.NOT
     )
 
-    //
+    private val reader = Files.newBufferedReader(Paths.get(filename))
+
+    private var ch: Char = '\u0000'
+    private var line = 1;
+
+    init {
+        read()
+    }
+
     fun next() : Lexeme
     {
-        if( !input.hasNext() ) {
-            return Lexeme(Token.EOF, "EOF", line)
-        }
+        if( !reader.ready() )
+            return Lexeme(Token.EOS, "<EOS>", line)
 
-        while( ch == ' ' || ch == '\t' || ch == '\r' ) {
-            ch = input.next()
-        }
+        whitespaces()
 
-        //
-        if( ch == '\'' ) {
-            while( ch != '\n' )
-                ch = input.next()
-            return next()
-        }
+        if( ch == '\'' )
+            return comment()
 
-        //
-        if( ch.isLetter() ) {
-            var s: String = ""
-            while( ch.isLetterOrDigit() ) {
-                s += ch
-                ch = input.next()
-            }
-            if( ch == '$' ) {
-                s += '$'
-                ch = input.next()
-            }
-            val kind = keywords.getOrDefault(s, Token.IDENTIFIER)
-            return Lexeme(kind, s, line)
-        }
+        if( ch.isLetter() )
+            return keywordOrIdentifier()
 
-        //
-        if( ch.isDigit() ) {
-            var s: String = ""
-            while( ch.isDigit() ) {
-                s += ch
-                ch = input.next()
-            }
-            if( ch == '.' ) {
-                s += '.'
-                ch = input.next()
-                while( ch.isDigit() ) {
-                    s += ch
-                    ch = input.next()
-                }
-            }
-            return Lexeme(Token.DOUBLE, s, line)
-        }
+        if( ch.isDigit() )
+            return number()
 
-        //
-        if( ch == '"' ) {
-            ch = input.next()
-            var s: String = ""
-            while( ch != '"' ) {
-                s += ch
-                ch = input.next()
-            }
-            ch = input.next()
-            return Lexeme(Token.STRING, s, line)
-        }
+        if( ch == '"' )
+            return textLiteral()
 
-        //
         if( ch == '\n' ) {
-            val lex = Lexeme(Token.NEWLINE, "<-/", line)
-            ch = input.next()
             ++line
-            return lex
+            read()
+            return Lexeme(Token.NEWLINE, "<NL>", line)
         }
 
-        //
-        if( ch == '<' ) {
-            ch = input.next()
-            if( ch == '=' ) {
-                ch = input.next()
-                return Lexeme(Token.LE, "<=", line)
-            }
-            else if( ch == '>' ) {
-                ch = input.next()
-                return Lexeme(Token.NE, "<>", line)
-            }
-            return Lexeme(Token.LT, "<", line)
-        }
+        if( ch == '<' || ch == '>' )
+            return comparison()
 
-        //
-        if( ch == '>' ) {
-            ch = input.next()
-            if( ch == '=' ) {
-                ch = input.next()
-                return Lexeme(Token.GE, ">=", line)
-            }
-            return Lexeme(Token.GT, ">", line)
-        }
+        return operationOrSymbol()
+    }
 
-        //
+    private fun operationOrSymbol(): Lexeme
+    {
         val kind = when( ch ) {
             '+' -> Token.ADD
             '-' -> Token.SUB
@@ -138,10 +82,105 @@ class Scanner constructor(filename : String) {
             ',' -> Token.COMMA
             else -> Token.NONE
         }
+        read()
 
-        val lex = Lexeme(kind, ch.toString(), line)
-        ch = input.next()
+        return Lexeme(kind, ch.toString(), line)
+    }
 
-        return lex
+    private fun comparison(): Lexeme
+    {
+        var res = Lexeme(Token.NONE, "<NIL>", line)
+
+        if( ch == '<' ) {
+            read()
+            res = if( ch == '=' ) {
+                read()
+                Lexeme(Token.LE, "<=", line)
+            }
+            else if( ch == '>' ) {
+                read()
+                Lexeme(Token.NE, "<>", line)
+            }
+            else
+                Lexeme(Token.LT, "<", line)
+        }
+        else if( ch == '>' ) {
+            read()
+            res = if( ch == '=' ) {
+                read()
+                Lexeme(Token.GE, ">=", line)
+            }
+            else
+                Lexeme(Token.GT, ">", line)
+        }
+
+        return res
+    }
+
+    private fun textLiteral(): Lexeme
+    {
+        val sb = StringBuilder()
+        read()
+        while( ch != '"' ) {
+            sb.append(ch)
+            read()
+        }
+        read()
+        val lex = sb.toString()
+        return Lexeme(Token.TEXT, lex, line)
+    }
+
+    private fun number(): Lexeme
+    {
+        val sb = StringBuilder()
+        while( ch.isDigit() ) {
+            sb.append(ch)
+            read()
+        }
+        if( ch == '.' ) {
+            sb.append('.')
+            read()
+            while( ch.isDigit() ) {
+                sb.append(ch)
+                read()
+            }
+        }
+        val lex = sb.toString()
+        return Lexeme(Token.NUMBER, lex, line)
+    }
+
+    private fun keywordOrIdentifier(): Lexeme
+    {
+        val sb = StringBuilder()
+        while( ch.isLetterOrDigit() ) {
+            sb.append(ch)
+            read()
+        }
+        if( ch == '$' ) {
+            sb.append('$')
+            read()
+        }
+
+        val lex = sb.toString()
+        val tok = keywords.getOrDefault(lex, Token.IDENTIFIER)
+        return Lexeme(tok, lex, line)
+    }
+
+    private fun comment(): Lexeme
+    {
+        while( ch != '\n' )
+            read()
+        return next()
+    }
+
+    private fun whitespaces()
+    {
+        while( ch == ' ' || ch == '\t' || ch == '\r' )
+            read()
+    }
+
+    private fun read()
+    {
+        ch = reader.read().toChar()
     }
 }

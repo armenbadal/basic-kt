@@ -7,7 +7,7 @@ class Parser constructor(filename: String) {
     private val scanner = Scanner(filename)
     private var lookahead = scanner.next()
 
-    private val firstOfExpr = setOf(Token.DOUBLE, Token.STRING,
+    private val firstOfExpr = setOf(Token.NUMBER, Token.TEXT,
             Token.IDENTIFIER, Token.SUB, Token.NOT, Token.LEFTPAR)
 
     //
@@ -33,13 +33,14 @@ class Parser constructor(filename: String) {
         return program
     }
 
-    //
+    // Program = { Subroutine NewLines }.
     private fun parseProgram()
     {
-        while( lookahead.kind == Token.NEWLINE ) {
+        // բաց թողնել հոսքի սկզբի դատարկ տողերը
+        while( lookahead.kind == Token.NEWLINE )
             match(Token.NEWLINE)
-        }
 
+        // վերլուծել ենթածրագրերը
         while( lookahead.kind == Token.SUBROUTINE ) {
             val subr = parseSubroutine()
             program.subroutines.put(subr.name, subr)
@@ -221,7 +222,7 @@ class Parser constructor(filename: String) {
                 match(Token.SUB)
             }
             var spvl = lookahead.value.toDouble()
-            match(Token.DOUBLE)
+            match(Token.NUMBER)
             spvl *= if( posi ) 1 else -1
             sp = Value.Number(spvl)
         }
@@ -412,14 +413,14 @@ class Parser constructor(filename: String) {
     //
     private fun parseFactor(): Expression
     {
-        if( lookahead.kind == Token.DOUBLE ) {
+        if( lookahead.kind == Token.NUMBER ) {
             val num = lookahead.value.toDouble()
-            match(Token.DOUBLE)
+            match(Token.NUMBER)
             return Value.Number(num)
         }
 
-        if( lookahead.kind == Token.STRING ) {
-            val str = match(Token.STRING)
+        if( lookahead.kind == Token.TEXT ) {
+            val str = match(Token.TEXT)
             return Value.Text(str)
         }
 

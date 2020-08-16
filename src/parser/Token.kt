@@ -4,11 +4,10 @@ package parser
 enum class Token {
     NONE,
 
-    DOUBLE,
-    STRING,
+    NUMBER,
+    TEXT,
     IDENTIFIER,
 
-    DECLARE,
     SUBROUTINE,
     LET,
     INPUT,
@@ -48,5 +47,5 @@ enum class Token {
     RIGHTPAR,
     COMMA,
 
-    EOF
+    EOS
 }
